@@ -128,6 +128,33 @@ export default function Home() {
     }
   }
 
+  const handleCopyToClipboard = (itemName: string): void => {
+    const tempTextArea = document.createElement('textarea');
+    tempTextArea.value = itemName;
+  
+    // Adiciona o elemento temporário ao DOM
+    document.body.appendChild(tempTextArea);
+  
+    // Seleciona o texto no elemento temporário
+    tempTextArea.select();
+    tempTextArea.setSelectionRange(0, itemName.length);
+  
+    try {
+      // Tenta copiar o texto
+      const success = document.execCommand('copy');
+      if (!success) {
+        console.error('Falha ao copiar para a área de transferência.');
+      }
+    } catch (err) {
+      console.error('Erro ao copiar para a área de transferência:', err);
+    } finally {
+      // Remove o elemento temporário do DOM
+      document.body.removeChild(tempTextArea);
+    }
+  };
+  
+  
+
   return (
     <div className="container">
       <h2 className="text-3xl mb-4">Controle de Estoque</h2>
@@ -201,7 +228,7 @@ export default function Home() {
               .filter((item: Item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
               .map((item: Item) => (
                 <tr key={item.id}>
-                  <td>{item.name}</td>
+                  <td style={{ cursor: 'pointer'}} onClick={() => handleCopyToClipboard(item.name)} >{item.name}</td>
                   <td>{item.quantityIn}</td>
                   <td>{item.quantityOut}</td>
                   <td>{item.quantityIn - item.quantityOut}</td>
