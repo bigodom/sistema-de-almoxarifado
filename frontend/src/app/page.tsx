@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import axios from 'axios';
 import Papa from 'papaparse';
 
@@ -12,6 +12,8 @@ export default function Home() {
   const [quantityIn, setQuantityIn] = useState('');
   const [quantityOut, setQuantityOut] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [inputNameIn, setInputNameIn] = useState('');
+  const [inputNameOut, setInputNameOut] = useState('');
 
   interface Item {
     id: number;
@@ -26,21 +28,21 @@ export default function Home() {
 
   const handleExportCSV = () => {
     // Extract only the needed columns
-      const csvData = items.map(({ name, quantityIn, quantityOut }) => ({
-        NOME: name,
-        ENTRADA: quantityIn,
-        SAIDA: quantityOut,
-        ESTOQUE: quantityIn - quantityOut,
-      }));
-  
+    const csvData = items.map(({ name, quantityIn, quantityOut }) => ({
+      NOME: name,
+      ENTRADA: quantityIn,
+      SAIDA: quantityOut,
+      ESTOQUE: quantityIn - quantityOut,
+    }));
+
     // Create CSV string manually
     const csv = Papa.unparse(csvData, {
       columns: ['NOME', 'ENTRADA', 'SAIDA', 'ESTOQUE'],
       delimiter: ';',
     });
-  
+
     const csvBlob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' });
-  
+
     // Create a link and trigger a click to download the file
     const csvURL = window.URL.createObjectURL(csvBlob);
     const tempLink = document.createElement('a');
@@ -50,7 +52,7 @@ export default function Home() {
     tempLink.click();
     document.body.removeChild(tempLink);
   };
-  
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -82,9 +84,14 @@ export default function Home() {
     }
   };
 
-  const handleAddQuantityIn = async (itemName: string) => {
+  const handleAddQuantityIn = async () => {
     try {
-      const selectedItem = items.find((item: Item) => item.name === itemName);
+      if (!inputNameIn) {
+        console.error('Nome do item inválido.');
+        return;
+      }
+
+      const selectedItem = items.find((item: Item) => item.name === inputNameIn);
       if (selectedItem) {
         const newQuantity = selectedItem.quantityIn + Number(quantityIn);
         await axios.post(`${apiURL}/api/items/${selectedItem.id}/in`, { quantity: newQuantity });
@@ -97,12 +104,17 @@ export default function Home() {
   };
 
 
-  const handleAddQuantityOut = async (itemName: string) => {
+
+  const handleAddQuantityOut = async () => {
     try {
-      const selectedItem = items.find((item: Item) => item.name === itemName);
+      if (!inputNameOut) {
+        console.error('Nome do item inválido.');
+        return;
+      }
+
+      const selectedItem = items.find((item: Item) => item.name === inputNameOut);
       if (selectedItem) {
         const newQuantity = selectedItem.quantityOut + Number(quantityOut);
-        console.log(newQuantity);
         await axios.post(`${apiURL}/api/items/${selectedItem.id}/out`, { quantity: newQuantity });
         fetchData();
         setQuantityOut('');
@@ -110,7 +122,7 @@ export default function Home() {
     } catch (error) {
       console.error('Error adding quantity out:', error);
     }
-  }
+  };
 
   const handleDeleteItem = async (itemId: number) => {
     const confirm = window.confirm(`Tem certeza que deseja deletar o item ${items.find((item: Item) => item.id === itemId)?.name}?`);
@@ -131,14 +143,14 @@ export default function Home() {
   const handleCopyToClipboard = (itemName: string): void => {
     const tempTextArea = document.createElement('textarea');
     tempTextArea.value = itemName;
-  
+
     // Adiciona o elemento temporário ao DOM
     document.body.appendChild(tempTextArea);
-  
+
     // Seleciona o texto no elemento temporário
     tempTextArea.select();
     tempTextArea.setSelectionRange(0, itemName.length);
-  
+
     try {
       // Tenta copiar o texto
       const success = document.execCommand('copy');
@@ -152,8 +164,8 @@ export default function Home() {
       document.body.removeChild(tempTextArea);
     }
   };
-  
-  
+
+
 
   return (
     <div className="container">
@@ -171,26 +183,26 @@ export default function Home() {
       </div>
 
       <div className='d-flex gap-5 mb-4'>
-      {/* Adicionar Quantidade de Entrada */}
-      <div className="mb-8">
-        <h4 className="text-lg mb-2">Adicionar Quantidade de Entrada</h4>
-        <div className="">
-          <input type="text" className='form-control mb-2' placeholder='Item' onChange={(e) => setItemName(e.target.value)} />
-          <input type="number" className="form-control mb-2" placeholder="Quantidade" onChange={(e) => setQuantityIn(e.target.value)} />
-          <button type="button" className="btn btn-success" onClick={() => handleAddQuantityIn(itemName)}> Adicionar Quantidade de Entrada </button>
+        {/* Adicionar Quantidade de Entrada */}
+        <div className="mb-8">
+          <h4 className="text-lg mb-2">Adicionar Quantidade de Entrada</h4>
+          <div className="">
+            <input type="text" className='form-control mb-2' placeholder='Item' value={inputNameIn} onChange={(e) => setInputNameIn(e.target.value)} />
+            <input type="number" className="form-control mb-2" placeholder="Quantidade" onChange={(e) => setQuantityIn(e.target.value)} />
+            <button type="button" className="btn btn-success" onClick={() => handleAddQuantityIn()}> Adicionar Quantidade de Entrada </button>
+          </div>
         </div>
-      </div>
 
 
-      {/* Adicionar Quantidade de Saída */}
-      <div className="mb-8">
-        <h4 className="text-lg mb-2">Adicionar Quantidade de Saída</h4>
-        <div className="">
-          <input type="text" className='form-control mb-2' placeholder='Item' onChange={(e) => setItemName(e.target.value)} />
-          <input type="number" className="form-control mb-2" placeholder="Quantidade" onChange={(e) => setQuantityOut(e.target.value)} />
-          <button type="button" className="btn btn-danger" onClick={() => handleAddQuantityOut(itemName)} > Adicionar Quantidade de Saída </button>
+        {/* Adicionar Quantidade de Saída */}
+        <div className="mb-8">
+          <h4 className="text-lg mb-2">Adicionar Quantidade de Saída</h4>
+          <div className="">
+            <input type="text" className='form-control mb-2' placeholder='Item' value={inputNameOut} onChange={(e) => setInputNameOut(e.target.value)} />
+            <input type="number" className="form-control mb-2" placeholder="Quantidade" onChange={(e) => setQuantityOut(e.target.value)} />
+            <button type="button" className="btn btn-danger" onClick={() => handleAddQuantityOut()} > Adicionar Quantidade de Saída </button>
+          </div>
         </div>
-      </div>
       </div>
 
       <div className='mb-8 mb-4'>
@@ -225,10 +237,13 @@ export default function Home() {
           </thead>
           <tbody>
             {Array.isArray(items) && items
-              .filter((item: Item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+              .filter((item: Item) => 
+                item.name.toLowerCase().includes(searchTerm.toLowerCase()) && 
+                item.name.toLowerCase().includes(inputNameIn.toLowerCase()) &&
+                item.name.toLowerCase().includes(inputNameOut.toLowerCase()))
               .map((item: Item) => (
                 <tr key={item.id}>
-                  <td style={{ cursor: 'pointer'}} onClick={() => handleCopyToClipboard(item.name)} >{item.name}</td>
+                  <td style={{ cursor: 'pointer' }} onClick={() => handleCopyToClipboard(item.name)} >{item.name}</td>
                   <td>{item.quantityIn}</td>
                   <td>{item.quantityOut}</td>
                   <td>{item.quantityIn - item.quantityOut}</td>
