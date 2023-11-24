@@ -14,6 +14,7 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [inputNameIn, setInputNameIn] = useState('');
   const [inputNameOut, setInputNameOut] = useState('');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   interface Item {
     id: number;
@@ -165,7 +166,16 @@ export default function Home() {
     }
   };
 
-
+  const sortedItems = [...items].sort((a: Item, b: Item) => {
+    const nameA = a.name.toLowerCase();
+    const nameB = b.name.toLowerCase();
+  
+    if (sortOrder === 'asc') {
+      return nameA.localeCompare(nameB);
+    } else {
+      return nameB.localeCompare(nameA);
+    }
+  });
 
   return (
     <div className="container">
@@ -236,7 +246,7 @@ export default function Home() {
             </tr>
           </thead>
           <tbody>
-            {Array.isArray(items) && items
+            {Array.isArray(sortedItems) && sortedItems
               .filter((item: Item) => 
                 item.name.toLowerCase().includes(searchTerm.toLowerCase()) && 
                 item.name.toLowerCase().includes(inputNameIn.toLowerCase()) &&
