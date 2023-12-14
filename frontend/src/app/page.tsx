@@ -4,7 +4,8 @@ import { useState, useEffect, use } from 'react';
 import axios from 'axios';
 import Papa from 'papaparse';
 
-const apiURL = 'http://192.168.11.130:3000';
+//take the api url from the .env file which is in a folder below
+const apiURL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function Home() {
   const [items, setItems] = useState<Item[]>([]);
@@ -233,9 +234,10 @@ export default function Home() {
         </div>
       </div>
       {/* Tabela de Exibição */}
-      <div className="mt-8">
+      <div className="mt-8" style={{ height: '600px', margin: 'auto' }}>
         <h4 className="text-lg mb-2">Itens</h4>
-        <table className="table w-full">
+        <div style={{ height: '100%', overflowY: 'auto' }}>
+        <table className="table table-striped">
           <thead>
             <tr>
               <th scope="col">Nome</th>
@@ -262,6 +264,7 @@ export default function Home() {
               ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
 
