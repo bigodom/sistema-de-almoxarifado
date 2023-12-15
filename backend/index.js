@@ -78,6 +78,48 @@ app.delete("/api/items/:id", async (req, res) => {
   res.json({ message: "Item deleted successfully." });
 });
 
-app.listen(3000, '192.168.11.130',() => {
+app.post("/api/wardrobe", async (req, res) => {
+  const { number } = req.body;
+  const { name } = req.body;
+  const { situation } = req.body;
+  
+  try {
+  await prisma.wardrobe.create({
+    data: {
+      number,
+      name,
+      situation,
+    },
+  });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Erro interno no servidor." });
+  }
+
+  res.json({ message: "Item created successfully." });
+});
+
+app.get("/api/wardrobes", async (req, res) => {
+  const wardrobes = await prisma.wardrobe.findMany();
+  res.json(wardrobes);
+});
+
+//update wardrobe
+app.put("/api/wardrobe/:number", async (req, res) => {
+  const { number } = req.params;
+  const { name } = req.body;
+  const { situation } = req.body;
+
+  await prisma.wardrobe.update({
+    where: { number: parseInt(number, 10) },
+    data: { name, situation },
+  });
+
+  res.json({ message: "Wardrobe updated successfully." });
+});
+
+const apiURL = process.env.API_URL
+
+app.listen(3000, apiURL,() => {
   console.log("Server is running on http://192.168.11.130:3000");
 });
