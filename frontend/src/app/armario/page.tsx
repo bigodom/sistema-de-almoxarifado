@@ -19,6 +19,8 @@ export default function armario() {
 	const [number, setNumber] = useState(0);
 	const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 	const [filtro, setFiltro] = useState('');
+	const [armariosDisponiveis, setArmariosDisponiveis] = useState(0);
+	const [armariosOcupados, setArmariosOcupados] = useState(0);
 
 	useEffect(() => {
 		fetchArmarios();
@@ -28,6 +30,11 @@ export default function armario() {
 		try {
 			const res = await axios.get(`${apiURL}/api/wardrobes`);
 			setArmarios(res.data);
+
+			const armariosDisponiveis = res.data.filter((armario: Armario) => armario.situation === 'Disponível').length;
+			const armariosOcupados = res.data.filter((armario: Armario) => armario.situation === 'Ocupado').length;
+			setArmariosDisponiveis(armariosDisponiveis);
+			setArmariosOcupados(armariosOcupados);
 		} catch (error) {
 			console.log(error);
 		}
@@ -139,6 +146,12 @@ export default function armario() {
 					</div>
 				</div>
 			)}
+
+
+			<div className='text-center fw-bold'>
+				<div className='text-success'>Armarios Disponíveis: {armariosDisponiveis}</div>
+				<div className='text-danger'>Armarios Ocupados: {armariosOcupados}</div>
+			</div>
 		</div>
 
 
