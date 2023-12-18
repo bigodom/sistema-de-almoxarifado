@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const apiURL = "http://192.168.11.130:3000/api/wardrobe"
+const apiURL = "process.env.API_URL"
 
 const generateWardrobe = async () => {
     for (let numero = 4; numero <= 680; numero++) {

@@ -82,6 +82,7 @@ app.post("/api/wardrobe", async (req, res) => {
   const { number } = req.body;
   const { name } = req.body;
   const { situation } = req.body;
+  const { date } = req.body;
   
   try {
   await prisma.wardrobe.create({
@@ -89,6 +90,7 @@ app.post("/api/wardrobe", async (req, res) => {
       number,
       name,
       situation,
+      date,
     },
   });
   } catch (error) {
@@ -109,17 +111,18 @@ app.put("/api/wardrobe/:number", async (req, res) => {
   const { number } = req.params;
   const { name } = req.body;
   const { situation } = req.body;
+  const { date } = req.body;
 
   await prisma.wardrobe.update({
     where: { number: parseInt(number, 10) },
-    data: { name, situation },
+    data: { name, situation, date },
   });
 
   res.json({ message: "Wardrobe updated successfully." });
 });
 
-const apiURL = process.env.API_URL
+const api_URL = "192.168.11.130"
 
-app.listen(3000, apiURL,() => {
+app.listen(3000, api_URL, () => {
   console.log("Server is running on http://192.168.11.130:3000");
 });
