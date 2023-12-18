@@ -1,12 +1,14 @@
 import { launch } from 'puppeteer';
 import axios from 'axios';
 
+const ARMARIO_URL = process.env.ARMARIO_URL;
+
 async function scrapeData() {
   const browser = await launch({ headless: false });
   const page = await browser.newPage();
 
   // Navegar até a página de login e realizar o login
-  await page.goto('http://192.168.10.117/armario/');
+  await page.goto(ARMARIO_URL);
   await page.type('#email', 'uniforme@comercialmonlevade.com.br');
   await page.type('#senha', 'Horizonte');
   await page.click('#open');
@@ -50,8 +52,7 @@ async function scrapeData() {
   return data;
 }
 
-const apiUrl = 'http://192.168.11.130:3000'
-
+const API_URL = process.env.API_URL;
 
 scrapeData().then((result) => {
   const updateWardrobe = async () => {
@@ -66,7 +67,7 @@ scrapeData().then((result) => {
       console.log(armario);
 
       try {
-        const response = await axios.put(`${apiUrl}/api/wardrobe/${armario.number}`, armario);
+        const response = await axios.put(`${API_URL}/api/wardrobe/${armario.number}`, armario);
         console.log(`Armário atualizado com sucesso: ${JSON.stringify(response.data)}`);
       } catch (error) {
         console.error('Erro ao atualizar armário:', error.message);
