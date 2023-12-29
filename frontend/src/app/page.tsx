@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Papa from 'papaparse';
+//import Navbar from '@/components/navbar';
 
 //take the api url from the .env file which is in a folder below
 const apiURL = process.env.NEXT_PUBLIC_API_URL;
@@ -170,7 +171,7 @@ export default function Home() {
   const sortedItems = [...items].sort((a: Item, b: Item) => {
     const nameA = a.name.toLowerCase();
     const nameB = b.name.toLowerCase();
-  
+
     if (sortOrder === 'asc') {
       return nameA.localeCompare(nameB);
     } else {
@@ -179,94 +180,95 @@ export default function Home() {
   });
 
   return (
-    <div className="container">
-      <h2 className="text-3xl mb-4">Controle de Estoque</h2>
-      {/* Adicionar Novo Item */}
-      <div className="mb-4">
-        <h4 className="text-lg mb-2">Adicionar Novo Item</h4>
-        <div className="flex">
-          <input type="text" className="form-control mb-2" placeholder="Nome do Item" onChange={(e) => setItemName(e.target.value)} />
-          <input type="number" className="form-control mb-2" placeholder="Quantidade" onChange={(e) => setQuantityIn(e.target.value)} />
-          <button type="button" className="btn btn-primary" onClick={handleAddItem}>
-            Adicionar Item
-          </button>
-        </div>
-      </div>
-
-      <div className='d-flex gap-5 mb-4'>
-        {/* Adicionar Quantidade de Entrada */}
-        <div className="mb-8">
-          <h4 className="text-lg mb-2">Adicionar Quantidade de Entrada</h4>
-          <div className="">
-            <input type="text" className='form-control mb-2' placeholder='Item' value={inputNameIn} onChange={(e) => setInputNameIn(e.target.value)} />
+    <div>
+      <div className="container">
+        <h2 className="text-3xl mb-4">Controle de Estoque</h2>
+        {/* Adicionar Novo Item */}
+        <div className="mb-4">
+          <h4 className="text-lg mb-2">Adicionar Novo Item</h4>
+          <div className="flex">
+            <input type="text" className="form-control mb-2" placeholder="Nome do Item" onChange={(e) => setItemName(e.target.value)} />
             <input type="number" className="form-control mb-2" placeholder="Quantidade" onChange={(e) => setQuantityIn(e.target.value)} />
-            <button type="button" className="btn btn-success" onClick={() => handleAddQuantityIn()}> Adicionar Quantidade de Entrada </button>
+            <button type="button" className="btn btn-primary" onClick={handleAddItem}>
+              Adicionar Item
+            </button>
           </div>
         </div>
 
+        <div className='d-flex gap-5 mb-4'>
+          {/* Adicionar Quantidade de Entrada */}
+          <div className="mb-8">
+            <h4 className="text-lg mb-2">Adicionar Quantidade de Entrada</h4>
+            <div className="">
+              <input type="text" className='form-control mb-2' placeholder='Item' value={inputNameIn} onChange={(e) => setInputNameIn(e.target.value)} />
+              <input type="number" className="form-control mb-2" placeholder="Quantidade" onChange={(e) => setQuantityIn(e.target.value)} />
+              <button type="button" className="btn btn-success" onClick={() => handleAddQuantityIn()}> Adicionar Quantidade de Entrada </button>
+            </div>
+          </div>
 
-        {/* Adicionar Quantidade de Saída */}
-        <div className="mb-8">
-          <h4 className="text-lg mb-2">Adicionar Quantidade de Saída</h4>
-          <div className="">
-            <input type="text" className='form-control mb-2' placeholder='Item' value={inputNameOut} onChange={(e) => setInputNameOut(e.target.value)} />
-            <input type="number" className="form-control mb-2" placeholder="Quantidade" onChange={(e) => setQuantityOut(e.target.value)} />
-            <button type="button" className="btn btn-danger" onClick={() => handleAddQuantityOut()} > Adicionar Quantidade de Saída </button>
+
+          {/* Adicionar Quantidade de Saída */}
+          <div className="mb-8">
+            <h4 className="text-lg mb-2">Adicionar Quantidade de Saída</h4>
+            <div className="">
+              <input type="text" className='form-control mb-2' placeholder='Item' value={inputNameOut} onChange={(e) => setInputNameOut(e.target.value)} />
+              <input type="number" className="form-control mb-2" placeholder="Quantidade" onChange={(e) => setQuantityOut(e.target.value)} />
+              <button type="button" className="btn btn-danger" onClick={() => handleAddQuantityOut()} > Adicionar Quantidade de Saída </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className='mb-8 mb-4'>
-        <h4 className="text-lg mb-2"> Exportar Itens para CSV</h4>
-        <button type='button' className='btn btn-primary' onClick={handleExportCSV}>BAIXAR</button>
-      </div>
-      {/* Pesquisar Item */}
-      <div className="mb-8 mb-4">
-        <h4 className="text-lg mb-2">Pesquisar Item</h4>
-        <div className="flex">
-          <input
-            type="text"
-            className="form-control flex-grow mr-2"
-            placeholder="Nome do Item"
-            value={searchTerm}
-            onChange={handleInputChange}
-          />
+        <div className='mb-8 mb-4'>
+          <h4 className="text-lg mb-2"> Exportar Itens para CSV</h4>
+          <button type='button' className='btn btn-primary' onClick={handleExportCSV}>BAIXAR</button>
         </div>
-      </div>
-      {/* Tabela de Exibição */}
-      <div className="mt-8" style={{ height: '600px', margin: 'auto' }}>
-        <h4 className="text-lg mb-2">Itens</h4>
-        <div style={{ height: '100%', overflowY: 'auto' }}>
-        <table className="table table-striped">
-          <thead>
-            <tr>
-              <th scope="col">Nome</th>
-              <th scope="col">Quantidade de Entrada</th>
-              <th scope="col">Quantidade de Saída</th>
-              <th scope='col'>Estoque</th>
-              <th scope='col'></th>
-            </tr>
-          </thead>
-          <tbody>
-            {Array.isArray(sortedItems) && sortedItems
-              .filter((item: Item) => 
-                item.name.toLowerCase().includes(searchTerm.toLowerCase()) && 
-                item.name.toLowerCase().includes(inputNameIn.toLowerCase()) &&
-                item.name.toLowerCase().includes(inputNameOut.toLowerCase()))
-              .map((item: Item) => (
-                <tr key={item.id}>
-                  <td style={{ cursor: 'pointer' }} onClick={() => handleCopyToClipboard(item.name)} >{item.name}</td>
-                  <td>{item.quantityIn}</td>
-                  <td>{item.quantityOut}</td>
-                  <td>{item.quantityIn - item.quantityOut}</td>
-                  <td><button className='btn btn-danger' onClick={() => handleDeleteItem(item.id)}>Deletar</button></td>
+        {/* Pesquisar Item */}
+        <div className="mb-8 mb-4">
+          <h4 className="text-lg mb-2">Pesquisar Item</h4>
+          <div className="flex">
+            <input
+              type="text"
+              className="form-control flex-grow mr-2"
+              placeholder="Nome do Item"
+              value={searchTerm}
+              onChange={handleInputChange}
+            />
+          </div>
+        </div>
+        {/* Tabela de Exibição */}
+        <div className="mt-8" style={{ height: '600px', margin: 'auto' }}>
+          <h4 className="text-lg mb-2">Itens</h4>
+          <div style={{ height: '100%', overflowY: 'auto' }}>
+            <table className="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">Nome</th>
+                  <th scope="col">Quantidade de Entrada</th>
+                  <th scope="col">Quantidade de Saída</th>
+                  <th scope='col'>Estoque</th>
+                  <th scope='col'></th>
                 </tr>
-              ))}
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                {Array.isArray(sortedItems) && sortedItems
+                  .filter((item: Item) =>
+                    item.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+                    item.name.toLowerCase().includes(inputNameIn.toLowerCase()) &&
+                    item.name.toLowerCase().includes(inputNameOut.toLowerCase()))
+                  .map((item: Item) => (
+                    <tr key={item.id}>
+                      <td style={{ cursor: 'pointer' }} onClick={() => handleCopyToClipboard(item.name)} >{item.name}</td>
+                      <td>{item.quantityIn}</td>
+                      <td>{item.quantityOut}</td>
+                      <td>{item.quantityIn - item.quantityOut}</td>
+                      <td><button className='btn btn-danger' onClick={() => handleDeleteItem(item.id)}>Deletar</button></td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
-
   );
 };

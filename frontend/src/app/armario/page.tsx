@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import Papa from 'papaparse';
+//import Navbar from '@/components/navbar';
 
 const apiURL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -12,7 +14,7 @@ interface Armario {
 	date: string;
 }
 
-export default function armario() {
+export default function Armario() {
 	const [armarios, setArmarios] = useState<Armario[]>([]);
 	const [modalOpen, setModalOpen] = useState(false);
 	const [nomeOcupante, setNomeOcupante] = useState('');
@@ -92,9 +94,35 @@ export default function armario() {
 		}
 	});
 
+	const handleExportCSV = () => {
+		// Extract only the needed columns
+		const csvData = armarios.map(({ number, situation, name, date }) => ({
+			NUMERO: number,
+			SITUACAO: situation,
+			NOME: name,
+			DATA: date,
+		}));
+
+		// Create CSV string manually
+		const csv = Papa.unparse(csvData, {
+			columns: ['NUMERO', 'SITUACAO', 'NOME', 'DATA'],
+			delimiter: ';',
+		});
+
+		const csvBlob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' });
+
+		// Create a link and trigger a click to download the file
+		const csvURL = window.URL.createObjectURL(csvBlob);
+		const tempLink = document.createElement('a');
+		tempLink.href = csvURL;
+		tempLink.setAttribute('download', 'armarios.csv');
+		document.body.appendChild(tempLink);
+		tempLink.click();
+		document.body.removeChild(tempLink);
+	};
+
 	return (
 		<div>
-
 			<div style={{ width: '80vw', margin: 'auto' }}>
 				<h1 className='text-center my-5' >Lista de Armários</h1>
 				<input type="text" className='form-control' placeholder='Digite o número do armário ou o nome da pessoa' value={filtro} onChange={handleFilterChange} />
@@ -151,7 +179,12 @@ export default function armario() {
 			<div className='text-center fw-bold'>
 				<div className='text-success'>Armarios Disponíveis: {armariosDisponiveis}</div>
 				<div className='text-danger'>Armarios Ocupados: {armariosOcupados}</div>
+				<div className='mb-8 mb-4'>
+					<h4 className="text-lg mb-2"> Exportar Armários para CSV</h4>
+					<button type='button' className='btn btn-primary' onClick={handleExportCSV}>BAIXAR</button>
+				</div>
 			</div>
+
 		</div>
 
 
