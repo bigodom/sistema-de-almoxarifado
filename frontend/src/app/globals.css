@@ -5,12 +5,17 @@
   --background-start-rgb: 0, 0, 0;
   --background-end-rgb: 0, 0, 0;
 }
+.root, html{
+  --tw-bg-opacity: 1;
+    background-color: rgb(15 23 42/var(--tw-bg-opacity));
+}
 
 body {
   color: rgb(var(--foreground-rgb));
   --tw-bg-opacity: 1;
     background-color: rgb(15 23 42/var(--tw-bg-opacity));
 }
+
 
 /* Adicione ao seu arquivo de estilo ou ao final do seu arquivo CSS existente */
 .modal {

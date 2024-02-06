@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Papa from 'papaparse';
+import Navbar from '@/components/Navbar';
 //import Navbar from '@/components/navbar';
 
 const apiURL = process.env.NEXT_PUBLIC_API_URL;
@@ -123,14 +124,15 @@ export default function Armario() {
 
 	return (
 		<div>
+			<Navbar></Navbar>
 			<div style={{ width: '80vw', margin: 'auto' }}>
 				<h1 className='text-center my-5' >Lista de Armários</h1>
-				<input type="text" className='form-control' placeholder='Digite o número do armário ou o nome da pessoa' value={filtro} onChange={handleFilterChange} />
+				<input type="text" className='form-control mb-3' placeholder='Digite o número do armário ou o nome da pessoa' value={filtro} onChange={handleFilterChange} />
 			</div>
 			<div style={{ width: '80vw', height: '600px', margin: 'auto' }}>
 				<div className="h-100 overflow-y-auto ">
 
-					<table className='table table-striped table-bordered table-hover' style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
+					<table className='table table-striped table-bordered table-hover' style={{ width: '100%', borderCollapse: 'collapse'}}>
 						<thead>
 							<tr>
 								<th style={{ width: '5%' }}>Número</th>

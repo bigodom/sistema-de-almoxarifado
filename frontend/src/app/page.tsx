@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Papa from 'papaparse';
-//import Navbar from '@/components/navbar';
+import Navbar from '@/components/Navbar';
 
 //take the api url from the .env file which is in a folder below
 const apiURL = process.env.NEXT_PUBLIC_API_URL;
@@ -180,18 +180,17 @@ export default function Home() {
   });
 
   return (
-    <div>
+    <div className='root'>
+      <Navbar></Navbar>
       <div className="container">
-        <h2 className="text-3xl mb-4">Controle de Estoque</h2>
+        <h2 className="text-3xl mb-4 text-center mt-2">Controle de Estoque</h2>
         {/* Adicionar Novo Item */}
         <div className="mb-4">
           <h4 className="text-lg mb-2">Adicionar Novo Item</h4>
           <div className="flex">
             <input type="text" className="form-control mb-2" placeholder="Nome do Item" onChange={(e) => setItemName(e.target.value)} />
             <input type="number" className="form-control mb-2" placeholder="Quantidade" onChange={(e) => setQuantityIn(e.target.value)} />
-            <button type="button" className="btn btn-primary" onClick={handleAddItem}>
-              Adicionar Item
-            </button>
+            <button type="button" className="btn btn-primary" onClick={handleAddItem}>Adicionar Item</button>
           </div>
         </div>
 

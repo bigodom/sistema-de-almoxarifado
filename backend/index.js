@@ -124,5 +124,5 @@ app.put("/api/wardrobe/:number", async (req, res) => {
 const api_URL = process.env.API_URL;
 
 app.listen(3000, api_URL, () => {
-  console.log("Server is running");
+  console.log("Server is running on port 3000.");
 });
